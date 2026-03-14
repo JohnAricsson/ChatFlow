@@ -4,6 +4,7 @@ import {
   login,
   logout,
   signup,
+  updateProfile,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/middleware.js";
 
