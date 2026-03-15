@@ -2,9 +2,11 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
+import Message from "../models/message.model.js";
 
 export const signup = async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { fullName, password } = req.body;
+  const email = req.body.email?.toLowerCase();
   try {
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required!" });
@@ -36,6 +38,7 @@ export const signup = async (req, res) => {
         fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        createdAt: newUser.createdAt,
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
@@ -46,7 +49,8 @@ export const signup = async (req, res) => {
   }
 };
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const email = req.body.email?.toLowerCase();
+  const { password } = req.body;
   try {
     const user = await User.findOne({ email });
 
@@ -85,27 +89,86 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body;
+    const { profilePic, fullName, password } = req.body;
     const userId = req.user._id;
 
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
+    const updateData = {};
+
+    if (profilePic) {
+      const uploadResponse = await cloudinary.uploader.upload(profilePic);
+      updateData.profilePic = uploadResponse.secure_url;
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    if (fullName) {
+      updateData.fullName = fullName;
+    }
+
+    if (password) {
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No update data provided" });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePic: uploadResponse.secure_url },
+      { $set: updateData },
       { new: true },
-    );
+    ).select("-password");
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("error in update profile:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("DETAILED CLOUDINARY/DB ERROR:", error);
+
+    // Send the actual error message to the frontend temporarily so you can see it
+    res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
 
+export const deleteProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    await Message.deleteMany({
+      $or: [{ senderId: userId }, { receiverId: userId }],
+    });
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.profilePic) {
+      try {
+        const publicId = user.profilePic.split("/").pop().split(".")[0];
+
+        await cloudinary.uploader.destroy(publicId);
+        console.log("Cloudinary asset deleted:", publicId);
+      } catch (cloudinaryErr) {
+        console.error("Cloudinary Cleanup Failed:", cloudinaryErr);
+      }
+    }
+
+    await User.findByIdAndDelete(userId);
+
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+    });
+
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error("Delete Account Error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 export const checkAuth = (req, res) => {
   try {
     res.status(200).json(req.user);

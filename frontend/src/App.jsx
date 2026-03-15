@@ -5,11 +5,14 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import ForgotPassword from "./pages/ForgotPassword";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { axiosInstance } from "./lib/axios";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore.js";
 import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
+import ForgotPasswordPage from "./pages/ForgotPassword.jsx";
 //npm i react-router-dom react-hot-toast
 //npm install tailwindcss @tailwindcss/vite
 //npm i -D daisyui@latest
@@ -29,12 +32,7 @@ const App = () => {
     checkAuth();
   }, [checkAuth]);
 
-  if (isCheckingAuth && !authUser)
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
-      </div>
-    );
+  if (isCheckingAuth && !authUser) return;
 
   return (
     <div>
@@ -57,7 +55,9 @@ const App = () => {
           path="/profile"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };

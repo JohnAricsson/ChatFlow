@@ -11,6 +11,7 @@ export const useAuthStore = create((set, get) => ({
   isSigningUp: false,
   isLoggingIn: false,
   isUpdatingProfile: false,
+  isDeletingAccount: false,
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
@@ -20,7 +21,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.get("/auth/check");
 
       set({ authUser: res.data });
-      get().connectSocket();
+      //get().connectSocket();
     } catch (error) {
       console.log("Error in checkAuth:", error);
       set({ authUser: null });
@@ -33,11 +34,12 @@ export const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: res.data });
-      toast.success("Account created successfully");
-      //get().connectSocket();
+
+      toast.success("Account created! Please login.");
+      return true;
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Signup failed");
+      return false;
     } finally {
       set({ isSigningUp: false });
     }
@@ -77,9 +79,33 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Profile updated successfully");
     } catch (error) {
       console.log("error in update profile:", error);
-      toast.error(error.response.data.message);
+
+      if (error.response?.status === 413) {
+        toast.error("Image is too large. Please pick a smaller file.");
+      } else {
+        toast.error(error.response?.data?.message || "An error occurred");
+      }
+      return false;
     } finally {
       set({ isUpdatingProfile: false });
+    }
+  },
+
+  deleteAccount: async () => {
+    set({ isDeletingAccount: true });
+    try {
+      const res = await axiosInstance.delete("/auth/delete-profile");
+
+      set({ authUser: null });
+      //get().disconnectSocket?.();
+
+      toast.success("Account deleted successfully");
+      return true;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete account");
+      return false;
+    } finally {
+      set({ isDeletingAccount: false });
     }
   },
 

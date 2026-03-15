@@ -2,17 +2,19 @@
 // npm i express mongoose dotenv jsonwebtoken bcryptjs cookie-parser cloudarinary socket.io
 // npm i nodemon -D
 //npm i cors
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express"; //type module in server.js
 import authRoutes from "./routes/auth.route.js";
-import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import messageRoutes from "./routes/message.route.js";
 import cors from "cors";
 
-dotenv.config();
 const app = express();
-
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -26,7 +28,8 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/messages", messageRoutes);
+
 app.listen(5001, () => {
   console.log("server is running on port: " + PORT);
   connectDB();

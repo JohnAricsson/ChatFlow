@@ -18,13 +18,11 @@ const SettingsPage = () => {
 
   return (
     <div className="min-h-screen bg-base-300 relative overflow-hidden transition-all duration-500">
-      {/* Mesh Gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/10 blur-[120px] animate-pulse" />
 
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-5xl relative z-10">
         <div className="bg-base-100/60 backdrop-blur-2xl rounded-3xl p-8 border border-white/5 shadow-2xl space-y-10">
-          {/* HEADER */}
           <div className="flex flex-col gap-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider w-fit mb-2">
               <Palette className="size-3" /> Appearance
@@ -37,7 +35,6 @@ const SettingsPage = () => {
             </p>
           </div>
 
-          {/* THEME GRID */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-widest text-base-content/50 ml-1">
               Select Theme
@@ -58,7 +55,6 @@ const SettingsPage = () => {
                   onMouseEnter={() => setPreviewTheme(t)}
                   onMouseLeave={() => setPreviewTheme(theme)}
                 >
-                  {/* FIX: Apply data-theme here so the swatch colors actually match the theme name */}
                   <div
                     className="relative h-10 w-full rounded-xl overflow-hidden shadow-inner"
                     data-theme={t}
@@ -82,19 +78,16 @@ const SettingsPage = () => {
             </div>
           </div>
 
-          {/* PREVIEW SECTION */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-widest text-base-content/50 ml-1 flex items-center gap-2">
               <Layout className="size-4" /> Live Preview
             </h3>
             <div className="rounded-3xl border border-white/5 overflow-hidden bg-base-200/50 p-4 md:p-8 shadow-inner">
               <div className="max-w-md mx-auto">
-                {/* MOCK PHONE FRAME */}
                 <div
                   data-theme={previewTheme}
                   className="bg-base-100 rounded-[2.5rem] shadow-2xl border-[6px] border-base-300 overflow-hidden relative transition-all duration-500 ease-in-out"
                 >
-                  {/* Chat Header */}
                   <div className="px-5 py-4 border-b border-base-300 bg-base-100/50 backdrop-blur-md">
                     <div className="flex items-center gap-3">
                       <div className="size-10 rounded-2xl bg-gradient-to-tr from-primary to-secondary p-0.5">
@@ -112,7 +105,6 @@ const SettingsPage = () => {
                     </div>
                   </div>
 
-                  {/* Chat Messages */}
                   <div className="p-5 space-y-4 min-h-[220px] max-h-[220px] overflow-y-auto bg-base-100/30">
                     {PREVIEW_MESSAGES.map((message) => (
                       <div
@@ -139,7 +131,6 @@ const SettingsPage = () => {
                     ))}
                   </div>
 
-                  {/* Chat Input */}
                   <div className="p-4 border-t border-base-300 bg-base-100/50 backdrop-blur-md">
                     <div className="flex gap-2">
                       <div className="relative flex-1">

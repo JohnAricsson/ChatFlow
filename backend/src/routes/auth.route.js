@@ -5,6 +5,7 @@ import {
   logout,
   signup,
   updateProfile,
+  deleteProfile,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/middleware.js";
 
@@ -17,6 +18,8 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 router.put("/update-profile", protectRoute, updateProfile);
+
+router.delete("/delete-profile", protectRoute, deleteProfile);
 
 router.get("/check", protectRoute, checkAuth);
 

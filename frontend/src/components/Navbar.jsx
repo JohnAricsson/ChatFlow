@@ -53,7 +53,9 @@ const Navbar = () => {
                   className="btn btn-ghost btn-sm gap-2 hover:bg-secondary/10 transition-all rounded-lg"
                 >
                   <User className="size-4" />
-                  <span className="hidden sm:inline font-medium">Profile</span>
+                  <span className="md:text-lg hidden sm:inline font-medium">
+                    Profile
+                  </span>
                 </Link>
 
                 <button
@@ -61,7 +63,7 @@ const Navbar = () => {
                   onClick={logout}
                 >
                   <LogOut className="size-4" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="md:text-lg hidden sm:inline">Logout</span>
                 </button>
               </>
             ) : location.pathname === "/login" ? (

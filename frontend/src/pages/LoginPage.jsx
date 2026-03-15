@@ -27,7 +27,7 @@ const LoginPage = () => {
     if (!formData.email || !formData.password) {
       return toast.error("Please fill in all fields");
     }
-    login(formData);
+    await login(formData);
   };
 
   return (

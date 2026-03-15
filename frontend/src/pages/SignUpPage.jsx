@@ -14,8 +14,11 @@ import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import signUpAnimation from "../assets/animations/Profile.json";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -35,22 +38,21 @@ const SignUpPage = () => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm() === true) signup(formData);
+    if (validateForm() !== true) return;
+
+    const success = await signup(formData);
+    if (success) navigate("/login");
   };
 
   return (
     <div className="min-h-screen bg-base-300 relative overflow-hidden flex items-center justify-center p-4">
-      {/* MESH GRADIENTS */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px] animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[120px] animate-pulse" />
 
-      {/* MAIN GLASS CONTAINER */}
       <div className="max-w-5xl w-full grid lg:grid-cols-2 bg-base-100/50 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden z-10">
-        {/* FORM SECTION */}
         <div className="p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
-          {/* MOBILE LOTTIE ABOVE FORM */}
           <div className="flex lg:hidden justify-center mb-6">
             <div className="w-64 h-64">
               <Lottie
@@ -172,7 +174,6 @@ const SignUpPage = () => {
           </div>
         </div>
 
-        {/* DESKTOP ANIMATION */}
         <div className="hidden lg:flex bg-gradient-to-br from-primary/10 to-secondary/10 items-center justify-center p-12 relative order-1 lg:order-2">
           <div className="max-w-md text-center space-y-4">
             <Lottie
